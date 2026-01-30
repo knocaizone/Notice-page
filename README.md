@@ -1,1 +1,1 @@
-https://knocaizone.github.io/Notice-page/
+https://knoc-aifieldzone.github.io/Notice-page/
