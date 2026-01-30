@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KNOC · AI Field Zone</title>
+  <meta name="color-scheme" content="light dark" />
+
+  <!-- 탭 아이콘(파비콘): repo/main/asset/logo.png -->
+  <link rel="icon" type="image/png" href="./asset/logo.png" />
+
+  <style>
+    :root{
+      --bg: #0b1220;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.08);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.68);
+      --line: rgba(255,255,255,.14);
+      --accent: #5eead4;
+      --warn: #fbbf24;
+      --ok: #34d399;
+      --danger: #fb7185;
+      --shadow: 0 18px 55px rgba(0,0,0,.35);
+      --radius: 18px;
+      --radius2: 14px;
+      --font: system-ui, -apple-system, Segoe UI, Roboto, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f6f7fb;
+        --panel: rgba(255,255,255,.72);
+        --panel2: rgba(255,255,255,.92);
+        --text: rgba(17,24,39,.92);
+        --muted: rgba(17,24,39,.62);
+        --line: rgba(17,24,39,.12);
+        --shadow: 0 18px 55px rgba(17,24,39,.12);
+      }
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 500px at 15% 0%, rgba(94,234,212,.18), transparent 55%),
+        radial-gradient(900px 450px at 95% 10%, rgba(251,191,36,.16), transparent 50%),
+        radial-gradient(1000px 600px at 60% 120%, rgba(96,165,250,.14), transparent 55%),
+        var(--bg);
+    }
+
+    .wrap{
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 22px 18px 32px;
+    }
+
+    header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 14px;
+      padding: 6px 2px 18px;
+    }
+    .brand{
+      display:flex; flex-direction:column; gap:6px;
+      min-width: 0;
+    }
+
+    /* 로고 + 이름 라인 */
+    .brandline{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 0;
+    }
+    .brandlogo{
+      width: 80px;
+      height: 40px;
+
+      border: none;          /* 테두리 제거 */
+      background: transparent; /* 배경 제거 */
+      border-radius: 0;      /* (원하면) 둥근 모서리도 제거 */
+
+      object-fit: contain;
+      flex: 0 0 auto;
+    }
+
+    .brandname{
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pill{
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(94,234,212,.14);
+      border: 1px solid rgba(94,234,212,.28);
+      color: var(--text);
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+    .sub{
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .top-actions{
+      display:flex; gap:10px; flex-wrap:wrap;
+      align-items:center; justify-content:flex-end;
+    }
+    .btn{
+      appearance:none;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight: 700;
+      font-size: 13px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      transition: transform .05s ease, background .15s ease, border-color .15s ease;
+      text-decoration:none;
+    }
+    .btn:hover{ background: var(--panel2); border-color: rgba(94,234,212,.35); }
+    .btn:active{ transform: translateY(1px); }
+    .btn.primary{
+      background: rgba(94,234,212,.14);
+      border-color: rgba(94,234,212,.32);
+    }
+
+    main{
+      display:grid;
+      /* ✅ (수정) 왼쪽(구독 서비스) 더 넓게 */
+      grid-template-columns: 1.40fr .60fr;
+      gap: 14px;
+    }
+    @media (max-width: 980px){
+      main{ grid-template-columns: 1fr; }
+    }
+
+    .panel{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel-hd{
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--line);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .panel-title{
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin:0;
+      font-size: 16px;
+    }
+    .panel-meta{
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+      line-height: 1.35;
+    }
+    .badge{
+      font-size: 12px;
+      font-weight: 800;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .badge.new{
+      border-color: rgba(251,191,36,.45);
+      background: rgba(251,191,36,.14);
+      color: var(--text);
+    }
+    .panel-bd{ padding: 14px 16px 16px; }
+
+    /* Services: 3열 n행 */
+    .svc-grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    @media (max-width: 980px){
+      .svc-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 520px){
+      .svc-grid{ grid-template-columns: 1fr; }
+    }
+
+    .svc{
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      border-radius: var(--radius2);
+      padding: 12px 12px;
+      text-decoration:none;
+      color: var(--text);
+      display:flex;
+      align-items:flex-start;
+      gap: 12px;
+      min-height: 86px;
+      transition: background .15s ease, border-color .15s ease, transform .05s ease;
+    }
+    .svc:hover{ background: rgba(255,255,255,.06); border-color: rgba(94,234,212,.35); }
+    .svc:active{ transform: translateY(1px); }
+
+    /* 아이콘 더 키움 */
+    .svc-ic{
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      display:grid;
+      place-items:center;
+      flex: 0 0 auto;
+      overflow:hidden;
+      margin-top: 1px;
+    }
+    .svc-ic img{
+      width: 36px; height: 36px;
+      display:block;
+    }
+    .svc-ic.fallback{
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      font-size: 18px;
+      color: var(--text);
+    }
+
+    .svc-name{
+      font-weight: 900;
+      font-size: 14px;
+      line-height: 1.1;
+      margin-top: 2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    /* 기능(줄바꿈 유지, 안 잘리게) */
+    .svc-sub{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+      line-height: 1.35;
+      white-space: pre-line; /* \n 줄바꿈 표시 */
+      overflow: visible;
+      text-overflow: clip;
+      word-break: keep-all;
+    }
+    .svc-txt{ min-width:0; }
+
+    /* Notice list */
+    .notice-list{
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+    .notice-item{
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      border-radius: var(--radius2);
+      padding: 12px 12px;
+      display:flex;
+      gap: 10px;
+      align-items:flex-start;
+    }
+    .tag{
+      font-size: 11px;
+      font-weight: 900;
+      padding: 6px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.02);
+      white-space:nowrap;
+      flex: 0 0 auto;
+      margin-top: 1px;
+    }
+    .tag.ok{ border-color: rgba(52,211,153,.45); background: rgba(52,211,153,.14); }
+
+    .ni-title{
+      font-weight: 900;
+      font-size: 13px;
+      line-height: 1.25;
+    }
+    .ni-sub{
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    /* Notice misc */
+    .notice-hide{
+      margin-top:12px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color: var(--muted);
+      font-size:12px;
+    }
+
+    .foot{
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap:wrap;
+      padding: 0 2px;
+    }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    a.muted{ color: var(--muted); text-decoration:none; }
+    a.muted:hover{ text-decoration:underline; }
+
+    /* ===== 카드(서비스) 3D/클릭 가능 느낌 강화 ===== */
+    .svc{
+      position: relative;
+      will-change: transform, box-shadow, border-color, background;
+      box-shadow:
+        0 6px 16px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.06);
+      transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        background .18s ease,
+        border-color .18s ease;
+    }
+
+    /* 은은한 상단 하이라이트(광원) */
+    .svc::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius: var(--radius2);
+      pointer-events:none;
+      background: radial-gradient(600px 140px at 20% 0%,
+        rgba(94,234,212,.18), transparent 60%);
+      opacity:0;
+      transition: opacity .18s ease;
+    }
+
+    .svc:hover{
+      transform: translateY(-4px) scale(1.01);
+      background: rgba(255,255,255,.07);
+      border-color: rgba(94,234,212,.60);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,.38),
+        0 0 0 1px rgba(94,234,212,.35);
+    }
+    .svc:hover::before{ opacity:1; }
+
+    /* 눌림(클릭) 느낌 */
+    .svc:active{
+      transform: translateY(-1px) scale(0.995);
+      box-shadow:
+        0 12px 28px rgba(0,0,0,.30),
+        inset 0 2px 12px rgba(0,0,0,.25);
+    }
+
+    /* 키보드 탭 이동 시에도 “선택됨/클릭 가능” 표시 */
+    .svc:focus-visible{
+      outline: none;
+      border-color: rgba(94,234,212,.70);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,.38),
+        0 0 0 3px rgba(94,234,212,.45);
+    }
+
+    /* 아이콘도 같이 ‘떠오르게’ */
+    .svc-ic{
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .svc:hover .svc-ic{
+      transform: translateY(-1px);
+      border-color: rgba(94,234,212,.55);
+      box-shadow: 0 12px 26px rgba(0,0,0,.28);
+    }
+
+    /* 모션 민감 사용자 배려 */
+    @media (prefers-reduced-motion: reduce){
+      .svc, .svc-ic, .svc::before{
+        transition: none !important;
+      }
+      .svc:hover, .svc:active{
+        transform: none !important;
+      }
+    }
+
+    /* ==================================================
+       ✅ (추가) 비활성 카드(예: CapCut): 클릭/호버 효과 제거
+       ================================================== */
+    .svc--disabled{
+      cursor: default;
+      opacity: .82;
+      user-select: none;
+    }
+    .svc--disabled:hover{
+      transform: none;
+      background: rgba(255,255,255,.03);
+      border-color: var(--line);
+      box-shadow:
+        0 6px 16px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.06);
+    }
+    .svc--disabled:active{
+      transform: none;
+      box-shadow:
+        0 6px 16px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.06);
+    }
+    .svc--disabled:focus-visible{
+      outline: none;
+      border-color: var(--line);
+      box-shadow:
+        0 6px 16px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.06);
+    }
+    .svc--disabled::before{
+      opacity: 0 !important;
+    }
+    .svc--disabled:hover .svc-ic{
+      transform: none;
+      box-shadow: none;
+      border-color: var(--line);
+    }
+    /* '오늘 하루 이 공지 숨기기' 영역 숨김 */
+    .notice-hide{
+      display: none !important;
+    }
+    #resetLocal{
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="brandline">
+          <img class="brandlogo" src="./asset/logo.png" alt="KNOC">
+          <div class="brandname">AI Field Zone</div>
+          <span class="pill" id="nowPill">로딩중…</span>
+        </div>
+        <div class="sub">
+          좌측은 <b>구독 서비스</b> 바로가기, 우측은 <b>공지</b>입니다.
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <a class="btn primary" href="https://www.google.com/" target="_blank" rel="noopener">Google</a>
+      </div>
+    </header>
+
+    <main>
+      <!-- 1) 구독 서비스 -->
+      <section class="panel" aria-labelledby="svcTitle">
+        <div class="panel-hd">
+          <div>
+            <h2 class="panel-title" id="svcTitle">구독 중인 서비스</h2>
+            <div class="panel-meta"> <span class="mono"></span> 구독 중인 AI 서비스는 변경될 수 있습니다. </div>
+          </div>
+          <span class="badge" id="svcCount">0개</span>
+        </div>
+        <div class="panel-bd">
+          <div class="svc-grid" id="svcGrid"></div>
+        </div>
+      </section>
+
+      <!-- 2) 공지사항 -->
+      <section class="panel" aria-labelledby="ntTitle">
+        <div class="panel-hd">
+          <div>
+            <h2 class="panel-title" id="ntTitle">공지 사항</h2>
+            <div class="panel-meta"> </div>
+          </div>
+          <span class="badge new" id="noticeBadge">기준일: 2026-01-30</span>
+        </div>
+
+        <div class="panel-bd" id="noticeBody">
+          <ul class="notice-list" id="noticeList"></ul>
+
+          <div class="notice-hide">
+            <input type="checkbox" id="hideToday" />
+            <label for="hideToday">오늘 하루 이 공지 숨기기</label>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="foot">
+      <div>마지막 렌더링: <span class="mono" id="renderAt">-</span></div>
+      <div><a class="muted" href="#" id="resetLocal">이 PC의 공지상태 초기화</a></div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * =========================
+     * 1) 여기만 주로 수정하세요
+     * =========================
+     */
+
+    // 서비스 목록 (기능만 / 줄바꿈은 \n)
+    const SERVICES = [
+      { name: "ChatGPT",     url: "https://chatgpt.com/",       domain: "chatgpt.com",
+        note: "대화형 문제 해결\n문서/메일/기획안 작성\n요약·정리·리라이트\n코드 작성·디버깅\n이미지 이해·생성" },
+
+      { name: "Genspark",    url: "https://www.genspark.ai/",   domain: "genspark.ai",
+        note: "슬라이드 자동 생성\n스프레드시트 자동 생성\n리서치·자료 수집\n보고서 초안 작성\n이미지 생성" },
+
+      { name: "Gemini",      url: "https://gemini.google.com/", domain: "gemini.google.com",
+        note: "대화형 질의응답\n요약·정리\n번역·다국어 작업\n아이디어 발상\n이미지 활용" },
+
+      { name: "NotebookLM",  url: "https://notebooklm.google/", domain: "notebooklm.google",
+        note: "자료 기반 Q&A(근거 중심)\n문서/링크 요약·핵심 추출\n리서치 노트 구조화\n출처 기반 정리·비교\n오디오 오버뷰" },
+
+      { name: "Manus",       url: "https://manus.im/",          domain: "manus.im",
+        note: "에이전트로 작업 실행\n반복 업무 자동화\n웹 기반 작업 처리\n절차형 워크플로우 구성\n결과 취합·정리" },
+
+      { name: "Canva",       url: "https://www.canva.com/",     domain: "canva.com",
+        note: "템플릿 기반 디자인\nPPT/포스터 제작\n브랜드 키트·스타일 적용\n간편 편집·공유\n콘텐츠 리사이징" },
+
+      { name: "Flowith",     url: "https://flowith.io/",        domain: "flowith.io",
+        note: "프로젝트 지식 정리\n노트 연결·구조화\n워크플로우 설계\n문서 구성·초안화\n작업 추적" },
+
+      { name: "Skywork",     url: "https://skywork.ai/",        domain: "skywork.ai",
+        note: "업무 문서 자동 작성\n템플릿 기반 산출물\n요약·정리\n서식 맞춤 작성\n반복 문서 생산" },
+
+      /* ✅ (수정) CapCut만 비활성화: 클릭/호버/링크 이동 모두 불가 */
+      { name: "CapCut",      url: "https://www.capcut.com/",    domain: "capcut.com",
+        disabled: true,
+        note: "영상 편집(컷/자막)\n자동 자막 생성\n템플릿 기반 제작\nAI 이펙트·보정\n내보내기 최적화" },
+
+      { name: "Lilys AI",    url: "https://lilys.ai/",          domain: "lilys.ai",
+        note: "회의/강의 요약\n하이라이트 추출\n챕터·목차 생성\n액션 아이템 정리\n노트화" },
+
+      { name: "ElevenLabs",  url: "https://elevenlabs.io/",     domain: "elevenlabs.io",
+        note: "TTS 음성 생성\n보이스 클로닝\n더빙·다국어 음성\n음성 스타일 제어\n오디오 제작" },
+    ];
+
+    /**
+     * 공지(자주 변경)
+     * - (요청) 헤드라인 블록 제거했으므로, 아래 items만 렌더링됨
+     * - (요청) 전부 '안내'로 통일
+     */
+    const NOTICE = {
+      noticeId: "2026-01-30",
+      items: [
+        { title: "Perplexity 구독 해지", sub: "사유: 사용량 저조" },
+        { title: "Google AI Pro 구독 시작",     sub: "Gemini, NotebookLM 등 사용 가능" },
+        { title: "ElevenLabs 플랜 다운그레이드",     sub: "사유: 사용량 저조 (Creator -> Starter)" }
+      ]
+    };
+
+    // 공지 숨김 로컬스토리지 키
+    const KEY_HIDE_UNTIL = (id) => `notice:hideUntil:${id}`;
+
+    /**
+     * =========================
+     * 2) 렌더링/동작 로직
+     * =========================
+     */
+    const $ = (sel) => document.querySelector(sel);
+
+    const svcGrid = $("#svcGrid");
+    const svcCount = $("#svcCount");
+
+    const noticeList = $("#noticeList");
+    const hideToday = $("#hideToday");
+    const resetLocal = $("#resetLocal");
+
+    function fmtNow(){
+      const d = new Date();
+      const pad = (n) => String(n).padStart(2,"0");
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function endOfTodayTs(){
+      const now = new Date();
+      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+      return end.getTime();
+    }
+
+    function isHiddenToday(){
+      const raw = localStorage.getItem(KEY_HIDE_UNTIL(NOTICE.noticeId));
+      if(!raw) return false;
+      const until = Number(raw);
+      return Number.isFinite(until) && Date.now() < until;
+    }
+
+    function setHiddenToday(on){
+      if(on) localStorage.setItem(KEY_HIDE_UNTIL(NOTICE.noticeId), String(endOfTodayTs()));
+      else localStorage.removeItem(KEY_HIDE_UNTIL(NOTICE.noticeId));
+    }
+
+    function faviconUrl(domain){
+      // ChatGPT 파비콘이 S2에서 가끔 깨져서 예외 처리(안정적인 소스)
+      if (domain === "chatgpt.com") return "https://chatgpt.com/favicon.ico";
+      return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`;
+    }
+
+    function renderServices(){
+      svcGrid.innerHTML = "";
+
+      for(const s of SERVICES){
+        // ✅ disabled면 a가 아니라 div로 생성(링크 자체 제거)
+        const card = document.createElement(s.disabled ? "div" : "a");
+        card.className = "svc" + (s.disabled ? " svc--disabled" : "");
+
+        if(!s.disabled){
+          card.href = s.url || "#";
+          card.target = "_blank";
+          card.rel = "noopener";
+        } else {
+          card.setAttribute("aria-disabled", "true");
+          card.tabIndex = -1; // (선택) 탭 포커스 제외
+        }
+
+        const ic = document.createElement("div");
+        ic.className = "svc-ic";
+
+        const img = document.createElement("img");
+        img.alt = "";
+        img.loading = "lazy";
+        img.referrerPolicy = "no-referrer";
+        if(s.domain) img.src = faviconUrl(s.domain);
+        img.onerror = () => {
+          img.remove();
+          ic.classList.add("fallback");
+          ic.textContent = (s.name || "?").trim().slice(0,1).toUpperCase();
+        };
+        ic.appendChild(img);
+
+        const txt = document.createElement("div");
+        txt.className = "svc-txt";
+
+        const nm = document.createElement("div");
+        nm.className = "svc-name";
+        nm.textContent = s.name || "(이름 없음)";
+
+        const sub = document.createElement("div");
+        sub.className = "svc-sub";
+        sub.textContent = s.note || "";
+
+        txt.appendChild(nm);
+        txt.appendChild(sub);
+
+        card.appendChild(ic);
+        card.appendChild(txt);
+
+        // (기존) url 없을 때 처리(단, disabled는 제외)
+        if(!s.disabled && !s.url){
+          card.style.opacity = ".55";
+          card.style.cursor = "not-allowed";
+          card.addEventListener("click", (e) => e.preventDefault());
+          sub.textContent = "URL 설정 필요";
+        }
+
+        svcGrid.appendChild(card);
+      }
+
+      svcCount.textContent = `${SERVICES.length}개`;
+    }
+
+    function renderNotice(){
+      const hidden = isHiddenToday();
+      hideToday.checked = hidden;
+
+      noticeList.innerHTML = "";
+      for(const it of (NOTICE.items || [])){
+        const li = document.createElement("li");
+        li.className = "notice-item";
+
+        // (요청) 전부 '안내'로 통일
+        const tag = document.createElement("span");
+        tag.className = "tag ok";
+        tag.textContent = "안내";
+
+        const box = document.createElement("div");
+        const t = document.createElement("div");
+        t.className = "ni-title";
+        t.textContent = it.title || "-";
+
+        const s = document.createElement("div");
+        s.className = "ni-sub";
+        s.textContent = it.sub || "";
+
+        box.appendChild(t);
+        box.appendChild(s);
+
+        li.appendChild(tag);
+        li.appendChild(box);
+        noticeList.appendChild(li);
+      }
+
+      const body = $("#noticeBody");
+      body.style.opacity = "1";
+    }
+
+    function renderHeader(){
+      $("#nowPill").textContent = fmtNow();
+      $("#renderAt").textContent = fmtNow();
+    }
+
+    hideToday.addEventListener("change", () => {
+      setHiddenToday(hideToday.checked);
+      renderNotice();
+    });
+
+    resetLocal.addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.removeItem(KEY_HIDE_UNTIL(NOTICE.noticeId));
+      hideToday.checked = false;
+      renderNotice();
+      alert("이 PC의 공지 상태를 초기화했습니다.");
+    });
+
+    // Init
+    renderHeader();
+    renderServices();
+    renderNotice();
+
+    setInterval(() => {
+      $("#nowPill").textContent = fmtNow();
+    }, 60 * 1000);
+  </script>
+</body>
+</html>
